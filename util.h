@@ -19,6 +19,9 @@
 #define ADDR_PTR uint64_t
 #define CYCLES uint32_t
 #define implement_me (void)0
+#define BYTE_SIZE 8
+#define PAGE_SIZE 1024
+#define NOISE_FILTER 10
 
 typedef char bit;
 
@@ -46,5 +49,7 @@ int notify_sender();
 int sender_wait_for_notification();
 // Blocks until notify_receiver is called
 int receiver_wait_for_notification();
+
+ADDR_PTR init_shm();
 
 #endif

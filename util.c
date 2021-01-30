@@ -44,7 +44,7 @@ void byte_to_bits(char input, char* bits)
 /* Extract byte to bit */
 void bits_to_byte(char* bits, char* output)
 {
-	char res;
+	char res = 0;
 	for(int i = 0; i < 8; i++) 
 	{
 		res += bits[i] << i;
@@ -55,6 +55,7 @@ void bits_to_byte(char* bits, char* output)
 
 static char volatile* sender_lock = NULL;
 static char volatile* receiver_lock = NULL;
+static char volatile* covert_addr = NULL;
 
 static int create_shared_lock()
 {
@@ -90,6 +91,8 @@ static int create_shared_lock()
 
     receiver_lock = sender_lock;
     receiver_lock++;
+
+    covert_addr = receiver_lock + PAGE_SIZE;
 
     *sender_lock = 1;
     *receiver_lock = 1;
@@ -127,4 +130,9 @@ int receiver_wait_for_notification()
     {
         while(*receiver_lock) __asm__("pause");
     }
+}
+
+ADDR_PTR init_shm() {
+    assert (create_shared_lock() == 0);
+    return (ADDR_PTR)covert_addr;
 }
